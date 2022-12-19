@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model EventType {
+  id    Int     @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  name  String
+  users User[]
+  events Event[]
+}
+
+model User {
+  id    Int    @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  name  String
+  surname  String?
+  email  String   @unique
+  password  String
+  eventTypes EventType[]
+  events Event[]
+}
+
+model Event {
+  id    Int     @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  date DateTime
+  name  String
+  description String?
+  eventType   EventType @relation(fields: [eventTypeId], references: [id])
+  eventTypeId Int
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
